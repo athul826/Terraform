@@ -1,13 +1,12 @@
 provider "aws" {
-    region = "us-east-1"
-  
+  region = "us-east-1"
 }
 
 resource "aws_instance" "example" {
-    ami = "ami-00bb6a80f01f03502"
-    instance_type = "t2.micro"
+  ami           = "ami-085ad6ae776d8f09c"
+  instance_type = "t2.micro"
 
-    tags = {
-        Name = "myTerraformInstance"
-}
+  tags = {
+    Name = "myTerraformInstance"
+  }
 }
