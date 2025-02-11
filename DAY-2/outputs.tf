@@ -1,9 +1,9 @@
 output "instance-public-ip" {
-    value = ""
-  
+    value = aws_instance.demo.public_ip
+
 }
 
 output "instance-private-ip" {
-    value = ""
+    value = aws_instance.demo.private_ip
   
 }
