@@ -32,7 +32,7 @@ variable "ssh-cidr_block" {
 }
 variable "http-cidr-block" {
     description = "this is the cidr block for http"
-    default = "0.0.0.0./0"
+    default = "0.0.0.0/0"
   
 }
 variable "aws-instance-type" {
@@ -61,7 +61,8 @@ variable "vpc_cidrblock" {
 
 }
 
-variable "subnet" {
+variable "map_public_ip_on_launch" {
+    default = true
 
   
 }
