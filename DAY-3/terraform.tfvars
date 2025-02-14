@@ -1,0 +1,6 @@
+aws-instance-type = "t2.micro"
+aws-ami           = "ami-04b4f1a9cf54c11d0"
+instance-name     = "terrafom-instance"
+vpc-cidr_block    = "10.0.0.0/16"
+public-subnet     = "10.0.1.0/24"
+security-group-ssh = "0.0.0.0/0"
