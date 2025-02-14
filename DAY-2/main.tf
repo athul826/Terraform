@@ -8,10 +8,6 @@ resource "aws_vpc" "demo" {
     cidr_block = var.vpc_cidrblock
   
 }
-
-
-
-
 resource "aws_instance" "demo" {
     ami = var.aws-ami
     instance_type = var.aws-instance-type
