@@ -1,0 +1,12 @@
+# Ignore Terraform state files
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+*.tfstate
+*.tfstate.backup
+
+# Ignore personal credentials (if any)
+aws_access_key
+aws_secret_key
+
