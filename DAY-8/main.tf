@@ -145,6 +145,12 @@ resource "aws_security_group" "demo" {
     protocol   = "-1"
     cidr_blocks = [var.aws_security_cidr_block]
   }
+  ingress {
+    from_port = 80
+    to_port = 80 
+    protocol = "tcp"
+    cidr_blocks = [var.aws_security_cidr_block]
+  }
 
 
 }
