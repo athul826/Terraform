@@ -2,6 +2,12 @@ provider "aws" {
   region = "us-east-1"
 
 }
+# create aws-key-pair 
+resource "aws_key_pair" "demo" {
+    key_name = "athul-terraform-demo"
+    public_key = file("C:\\Users\\Athul Tharol\\.ssh\\id_ed25519.pub")
+  
+}
 
 resource "aws_vpc" "demo" {
   cidr_block = var.vpc_cidr
@@ -84,12 +90,28 @@ resource "aws_security_group" "demo" {
 resource "aws_instance" "demo" {
   ami                         = var.ami
   instance_type               = var.instance_type
+  key_name                    =  aws_key_pair.demo.key_name             
   subnet_id                   = aws_subnet.demo.id
   vpc_security_group_ids      = [aws_security_group.demo.id]
   associate_public_ip_address = true
 
   tags = {
     Name = var.instance_name
+  }
+    # ✅ Provisioner block starts here
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt update -y",
+      "sudo apt install nginx -y",
+      "sudo systemctl start nginx"
+    ]
+
+    connection {
+      type        = "ssh"
+      user        = "ubuntu" # Or ec2-user for Amazon Linux
+      private_key = file("C:\\Users\\Athul Tharol\\.ssh\\id_ed25519")  # Your private key path
+      host        = self.public_ip
+    }
   }
 
 }
