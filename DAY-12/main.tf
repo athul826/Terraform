@@ -113,5 +113,9 @@ resource "aws_instance" "demo" {
       host        = self.public_ip
     }
   }
+   # ✅ Local-exec provisioner block starts here
+  provisioner "local-exec" {
+    command = "echo 'Instance ${self.id} is created and Nginx has been installed!'"
+  }
 
 }
