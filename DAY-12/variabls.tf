@@ -63,6 +63,6 @@ variable "instance_type" {
 } 
 
 variable "instance_name" {
-    default = "demo_instance"
+    default = "demo_instance3"
   
 }
