@@ -1,155 +1,36 @@
-# create ec2 instance using terraform  
 provider "aws" {
-  region = "ap-south-1"
+  region = "us-east-1"
 
 }
 
-variable "vpc_name" {
-  description = "assing name for vpc"
-  type        = string
-  default     = "10.0.0.0/16"
+module "vpc" {
+  source                  = "./modules/vpc"
+  vpc_name                = "demo-vpc"
+  vpc_cid                 = "10.0.0.0/16"
+  subnet_name             = "my-demo-subnet"
+  subnet_availabilityzone = "us-east-1a"
+  subnet_cidrblock        = "10.0.0.0/24"
+  internet_gateway_name   = "demo-ig"
+  route_table_name        = "my-route-table"
+  route_table_cidrblock   = "0.0.0.0/0"
+
+}
+# call the security group modules 
+module "security_group" {
+  source                            = "./modules/secruity"
+  secruity_group_name               = "my-security"
+  secruity_group_vpc_id             = module.vpc.vpc_id_output
+  security_group_ingress_cidr_block = "0.0.0.0/0"
+  secruity_group_egress_cidr_block  = "0.0.0.0/0"
+}
+# create the ec2 instance 
+module "ec2" {
+  source                = "./modules/ec2"
+  instance_name1        = "demo-instance2"
+  instance_ami1         = "ami-0e449927258d45bc4"
+  instance_type1        = "t2.micro"
+  instance_subnet_id1   = module.vpc.subnet_id_output
+  instance_security_id1 = module.security_group.security_group_id_output
 
 }
 
-variable "vpc_cidr_block" {
-  description = "assing cidr value for vpc"
-
-}
-resource "aws_vpc" "demo" {
-  cidr_block = var.vpc_cidr_block
-
-  tags = {
-    Name = var.vpc_name
-  }
-
-}
-variable "subnet_name" {
-  default = "demo-subnet"
-
-}
-
-variable "subnet_cidrblock" {
-  default = "10.0.0.0/24"
-
-}
-variable "subnet_availabilityzone" {
-  default = "ap-south-1a"
-
-}
-# create subnet for vpc 
-resource "aws_subnet" "demo" {
-  vpc_id                  = aws_vpc.demo.id
-  cidr_block              = var.subnet_cidrblock
-  availability_zone       = var.subnet_availabilityzone
-  map_public_ip_on_launch = true
-
-  tags = {
-    Name = var.subnet_name
-  }
-
-}
-
-variable "internet-gateway-name" {
-  default = "my-ig"
-
-}
-
-# create internet gateway for vpc 
-resource "aws_internet_gateway" "demo" {
-  vpc_id = aws_vpc.demo.id
-
-  tags = {
-    Name = var.internet-gateway-name
-  }
-
-}
-variable "route_table_name" {
-  default = "my-route-table"
-
-}
-variable "route_table_cidr" {
-  default = "0.0.0.0/0"
-
-}
-
-# create route table for vpc 
-resource "aws_route_table" "demo" {
-  vpc_id = aws_vpc.demo.id
-
-  route {
-    gateway_id = aws_internet_gateway.demo.id
-    cidr_block = var.route_table_cidr
-  }
-
-  tags = {
-    Name = var.route_table_name
-  }
-
-}
-
-# subnet association with route table 
-resource "aws_route_table_association" "demo" {
-    route_table_id = aws_route_table.demo.id 
-    subnet_id = aws_subnet.demo.id 
-  
-} 
-variable "security_gorup_name" {
-    default = "my-security"
-  
-} 
-
-variable "security_group_ingress_cidr_block" {
-    default = "0.0.0.0./0"
-  
-}
-variable "secruity_group_egress_cidr" {
-    default = "0.0.0.0/0"
-  
-}
-
-resource "aws_security_group" "demo" {
-    vpc_id = aws_vpc.demo.id 
-    name = var.security_gorup_name
-
-    ingress {
-        from_port = 22 
-        to_port = 22 
-        protocol = "tcp"
-        cidr_blocks = [var.security_group_ingress_cidr_block]
-    } 
-    egress {
-        from_port = 0 
-        to_port = 0 
-        protocol = "-1"
-        cidr_blocks = var.secruity_group_egress_cidr
-    }
-  
-} 
-
-# create instance 
-variable "ami" {
-    default = ""
-  
-} 
-
-variable "instance_type" { 
-    default = ""
-  
-} 
-
-variable "instance_name" {
-  
-} 
-
-resource "aws_instance" "demo" {
-    ami = var.ami 
-    instance_type = var.instance_type
-    subnet_id = aws_subnet.demo.id 
-    associate_public_ip_address = true 
-    vpc_security_group_ids = [aws_security_group.demo.id] 
-
-    tags = {
-        Name = var.instance_name
-    }
-  
-}
